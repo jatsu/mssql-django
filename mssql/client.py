@@ -28,6 +28,15 @@ class DatabaseClient(BaseDatabaseClient):
             defaults_file = options.get('read_default_file')
 
             args = [cls.executable_name]
+            
+            args += ["-C"] 
+            #The -C switch is used by the client to configure it to implicitly the trust server certificate and not validate it. 
+            #This option is equivalent to the ADO.net option TRUSTSERVERCERTIFICATE = true.
+            
+            args += ["-N"] 
+            #The -N switch is used by the client to request an encrypted connection. 
+            #This option is equivalent to the ADO.net option ENCRYPT = true.            
+            
             if server:
                 if port:
                     server = ','.join((server, str(port)))
