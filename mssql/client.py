@@ -18,6 +18,9 @@ class DatabaseClient(BaseDatabaseClient):
 
         driver = options.get('driver', 'ODBC Driver 13 for SQL Server')
         ms_drivers = re.compile('^ODBC Driver .* for SQL Server$|^SQL Server Native Client')
+        trustServerCertificate = 'TrustServerCertificate=yes' in options.get('extra_params','') or False
+        encrypt = 'Encrypt=yes' in options.get('extra_params','') or False 
+        
         if not ms_drivers.match(driver):
             cls.executable_name = 'isql'
 
@@ -29,13 +32,14 @@ class DatabaseClient(BaseDatabaseClient):
 
             args = [cls.executable_name]
             
-            args += ["-C"] 
-            #The -C switch is used by the client to configure it to implicitly the trust server certificate and not validate it. 
-            #This option is equivalent to the ADO.net option TRUSTSERVERCERTIFICATE = true.
-            
-            args += ["-N"] 
-            #The -N switch is used by the client to request an encrypted connection. 
-            #This option is equivalent to the ADO.net option ENCRYPT = true.            
+            if trustServerCertificate:
+                args += ["-C"] 
+                #The -C switch is used by the client to configure it to implicitly the trust server certificate and not validate it. 
+                #This option is equivalent to the ADO.net option TRUSTSERVERCERTIFICATE = true.
+            if encrypt:
+                args += ["-N"] 
+                #The -N switch is used by the client to request an encrypted connection. 
+                #This option is equivalent to the ADO.net option ENCRYPT = true.            
             
             if server:
                 if port:
